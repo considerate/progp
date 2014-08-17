@@ -1,8 +1,11 @@
 module MolSeq
 (	 
 	MolSeq,
+	SeqType,
 	string2seq,
-	seqDistance
+	seqType,
+	seqDistance,
+	seqSequence
 )
 where
 
@@ -33,7 +36,7 @@ seqLength :: MolSeq -> Int
 seqLength (MolSeq _ seq _) = length seq
 
 seqType :: MolSeq -> SeqType
-seqType (MolSeq _ _ type) = type 
+seqType (MolSeq _ _ typ) = typ 
 
 {-
  Enligt en känd och enkel modell som kallas Jukes-Cantor låter man avståndet da, b mellan två DNA-sekvenser
