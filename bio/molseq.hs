@@ -1,7 +1,7 @@
 module MolSeq
 (	 
 	MolSeq,
-	SeqType,
+	SeqType(DNA,Protein),
 	string2seq,
 	seqType,
 	seqDistance,
@@ -10,8 +10,9 @@ module MolSeq
 where
 
 import Levenshtein
+import Hamming
 
-data SeqType = DNA | Protein deriving (Show)
+data SeqType = DNA | Protein deriving (Show, Eq)
 data MolSeq = MolSeq String String SeqType deriving (Show)
 
 dnaBlocks = ['A', 'C', 'G', 'T']
@@ -45,17 +46,12 @@ seqType (MolSeq _ _ typ) = typ
  Formeln fungerar inte bra om sekvenserna skiljer sig åt mer än väntat, så om α>0.74 låter man ofta da, b = 3.3.
 -}
 
-fractionalDist :: Int -> Int -> Int -> Float
-fractionalDist dist 0 0 = 0
-fractionalDist dist lena lenb | lena > lenb = realToFrac(dist) / realToFrac(lena)
-							  | otherwise = realToFrac(dist) / realToFrac(lenb)
+seqDist :: String -> String -> Double
+seqDist a b = (realToFrac $ hammingDist a b) / (realToFrac $ length a)
 
-seqDist :: String -> String -> Float
-seqDist a b = fractionalDist (levenshtein a b) (length a) (length b)
+seqDistance :: MolSeq -> MolSeq -> Double
+seqDistance (MolSeq _ a DNA) (MolSeq _ b DNA) | seqDist a b <= 0.74 = -3 / 4 * log(1 - 4/3 * seqDist a b)
+											  | otherwise = 3.3
 
-seqDistance :: MolSeq -> MolSeq -> Float
-seqDistance (MolSeq _ a DNA) (MolSeq _ b DNA) = 
-	-3 / 4 * log(1 - 4/3 * seqDist a b)
-
-seqDistance (MolSeq _ a Protein) (MolSeq _ b Protein) = 
-	-19 / 20 * log(1 - 20/19 * seqDist a b)
+seqDistance (MolSeq _ a Protein) (MolSeq _ b Protein) | seqDist a b <= 0.94 =  -19 / 20 * log(1 - 20/19 * seqDist a b)
+                                                      | otherwise = 3.7

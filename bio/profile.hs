@@ -1,17 +1,19 @@
 module Profile
-(Profile)
+(Profile,
+profileDistance,
+profileDiff,
+fromMolSeqs
+)
 where
 
 import MolSeq
 
-import Data.Packed.Matrix
-import Data.Packed.Vector
+import qualified Numeric.Matrix as M
 import Data.List
 
 -- sortAndGroup assocs = fromListWith (++) [(k, [v]) | (k, v) <- assocs]
 
-
-data Profile = Profile String (Matrix Float) SeqType Int deriving (Show)
+data Profile = Profile String (M.Matrix Double) SeqType Int deriving (Show)
 
 blocks = "ACGT"
 
@@ -26,29 +28,21 @@ letterCounts letters str = map (countLetter str) letters
 
 convertMatrixIntsToFloats lists = map (map realToFrac) lists
 
-getMatrix:: [MolSeq] -> Matrix Float
-getMatrix seqs = fromLists $ Data.List.transpose $ convertMatrixIntsToFloats  $ map (letterCounts blocks) (seqsToStr seqs)
+makeProfileMatrix :: [MolSeq] -> M.Matrix Double
+makeProfileMatrix seqs = M.fromList $ Data.List.transpose $ convertMatrixIntsToFloats $ map (letterCounts blocks) (seqsToStr seqs)
+
 
 fromMolSeqs :: [MolSeq] -> Profile
 fromMolSeqs seqs = do
 	let typ = seqType (head seqs) -- Get type of first MolSeq
-	let matrix = getMatrix seqs
+	let matrix = makeProfileMatrix  seqs
 	Profile "Matrix" matrix typ (length seqs)
 
---getWeightedMatrix :: Profile -> Matrix Float
---getWeightedMatrix (Profile _ matrix _ len) = mapMatrix (`div` realToFrac(len)) matrix
+profileDiff :: Profile -> Profile -> M.Matrix Double
+profileDiff (Profile _ a _ lena) (Profile _ b _ lenb) = M.minus (M.scale a (1/ realToFrac lena)) (M.scale b (1/ realToFrac lenb))
 
-absSum matrix = sum $ map abs $ toList (flatten matrix)
+sumMatrix :: (Num a) => [[a]] -> a
+sumMatrix xs = sum $ map sum xs
 
---printRow :: Matrix -> Int -> String
---printRow matrix rowIndex = show $ Data.Vector.toList $ Data.Matrix.getRow rowIndex matrix
-
---instance Show Profile where
---  show (Profile name matrix typ len) = 
---  	(show name) ++ "\n" ++
---  	"A" ++ printRow matrix 1 ++ "\n" ++
---  	"C" ++ printRow matrix 2++ "\n" ++
---  	"G" ++ printRow matrix 3 ++ "\n" ++
---  	"T" ++ printRow matrix 4++ "\n" ++
---  	(show typ) ++ "\n" ++
---  	(show len)
+profileDistance :: Profile -> Profile -> Double
+profileDistance a b = sumMatrix $ M.toList $ M.map abs (profileDiff a b)
