@@ -1,0 +1,38 @@
+{
+	"Swedish": {
+		"menu" : [
+			".................................................",
+			"1) Logga in",
+			"2) Kontakta oss",
+			"................................................."
+		],
+		"banner": "UNICORN INC",
+		"log-in": [
+		".................................................",
+		"1) Uttag",
+		"2) Insättning",
+		"3) Saldo"
+		],
+		"invalid-input": [
+		"Felaktig inmatning. Vänligen försök igen."
+		]
+	},
+	"English": {
+		"menu" : [
+			".................................................",
+			"1) Log in",
+			"2) Contact us",
+			"................................................."
+		],
+		"banner": "UNICORN INC",
+		"log-in": [
+		".................................................",
+		"1) Withdraw",
+		"2) Deposits",
+		"3) Balance"
+		],
+		"invalid-input" : [
+		"Invalid input. Please try again."
+		]
+	}
+}
