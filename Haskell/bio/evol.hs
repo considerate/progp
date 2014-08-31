@@ -4,7 +4,6 @@ where
 
 import MolSeq
 import Profile
-import qualified Numeric.Matrix as M
 
 class Evol a where
 	distance :: a -> a -> Double
@@ -19,5 +18,5 @@ instance Evol Profile where
 distanceRow :: (Evol a) => [a] -> a -> [Double]
 distanceRow xs y = map (\z -> distance y z) xs
 
-distanceMatrix :: (Evol a) => [a] -> M.Matrix Double
-distanceMatrix xs = M.fromList $ map (distanceRow xs) xs 
+distanceMatrix :: (Evol a) => [a] -> [[Double]]
+distanceMatrix xs = map (distanceRow xs) xs 
