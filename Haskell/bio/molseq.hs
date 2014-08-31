@@ -4,8 +4,10 @@ module MolSeq
 	SeqType(DNA,Protein),
 	string2seq,
 	seqType,
+	seqName,
 	seqDistance,
-	seqSequence
+	seqSequence,
+	seqLength
 )
 where
 
@@ -13,7 +15,7 @@ import Levenshtein
 import Hamming
 
 data SeqType = DNA | Protein deriving (Show, Eq)
-data MolSeq = MolSeq String String SeqType deriving (Show)
+data MolSeq = MolSeq String String SeqType deriving (Show, Eq)
 
 dnaBlocks = ['A', 'C', 'G', 'T']
 
