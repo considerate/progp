@@ -54,6 +54,6 @@ seqDist a b = (realToFrac $ hammingDist a b) / (realToFrac $ length a)
 seqDistance :: MolSeq -> MolSeq -> Double
 seqDistance (MolSeq _ a DNA) (MolSeq _ b DNA) | seqDist a b <= 0.74 = -3 / 4 * log(1 - 4/3 * seqDist a b)
 											  | otherwise = 3.3
-
 seqDistance (MolSeq _ a Protein) (MolSeq _ b Protein) | seqDist a b <= 0.94 =  -19 / 20 * log(1 - 20/19 * seqDist a b)
                                                       | otherwise = 3.7
+seqDistance _ _ = error "Incompatible Sequence types"

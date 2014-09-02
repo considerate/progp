@@ -1,10 +1,10 @@
 import System.Environment 
 
+ackfib :: [Integer] -> [Integer]
+ackfib [x,y] = [x] ++ ackfib [y,x+y]
+
 fib :: Int -> Integer
-fib 0 = 0
-fib 1 = 1
-fib n | n > 1 = fib (n-1) + fib (n-2)
-      | otherwise = error "Negative indices are invalid"
+fib n = last $ take n $ ackfib [0,1]
 
 
 listOfFib :: Int -> Int -> [Integer]

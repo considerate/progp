@@ -16,7 +16,7 @@ import Matrix
 
 -- sortAndGroup assocs = fromListWith (++) [(k, [v]) | (k, v) <- assocs]
 
-data Profile = Profile String [[Double]] SeqType Int deriving (Show)
+data Profile = Profile String [[Double]] SeqType Int deriving (Show, Eq)
 
 blocks = "ACGT"
 proteinblocks = sort "ARNDCEQGHILKMFPSTWYVX"
@@ -37,7 +37,6 @@ makeProfileMatrix seqs =
 	case seqType $ head seqs of 
 		DNA -> Data.List.transpose $ convertMatrixIntsToFloats $ map (letterCounts blocks) (seqsToStr seqs)
 		Protein -> Data.List.transpose $ convertMatrixIntsToFloats $ map (letterCounts proteinblocks) (seqsToStr seqs)
-
 
 molseqs2profile :: String -> [MolSeq] -> Profile
 molseqs2profile name seqs = do

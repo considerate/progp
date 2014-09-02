@@ -1,6 +1,6 @@
 module Evol
 (
-	Evol,
+	Evol(name,distance),
 	distanceMatrix
 )
 where
@@ -8,20 +8,19 @@ where
 import MolSeq
 import Profile
 import Matrix
+import Data.List
 
-class Evol a where
+class (Eq a) => Evol a where
 	distance :: a -> a -> Double
 	name :: a -> String
 
 instance Evol MolSeq where
-	distance x y = seqDistance x y
-	name x = seqName x
+	distance = seqDistance
+	name = seqName
 
 instance Evol Profile where
-	distance x y = profileDistance x y
-	name x = profileName x
-
-
+	distance = profileDistance
+	name = profileName
 
 data PrettyMatrix a b = PrettyMatrix [[a]] [b] deriving (Eq)
 
@@ -33,7 +32,6 @@ instance (Show a, Evol b) => Show (PrettyMatrix a b) where
 			showRow n row = n ++ (unwords $ map (("\t\t"++) . show) row)
 			showHeader row = (unwords $ map (("\t\t"++)) row)
 
-
 roundToDec n x = (fromInteger $ round $ x * (10^n)) / (10.0^^n)
 
 distanceRow :: (Evol a) => [a] -> a -> [Double]
@@ -42,6 +40,11 @@ distanceRow xs y = map (\z -> distance y z) xs
 distanceMatrix' :: (Evol a) => [a] -> [[Double]]
 distanceMatrix' xs = matrixMap (roundToDec 2) (map (distanceRow xs) xs)
 
+distancePair :: (Evol a) => (a,a) -> (String, String, Double)
+distancePair (x,y) = (name x, name y, distance x y)
 
-distanceMatrix :: (Evol a) => [a] -> PrettyMatrix Double a
-distanceMatrix xs = PrettyMatrix (distanceMatrix' xs) xs
+crossSets :: (Eq a) => [a] -> [(a,a)]
+crossSets xs = [(x,y) | x <- xs, y <- xs, (x `elemIndex` xs) <= (y `elemIndex` xs)]
+
+distanceMatrix :: (Evol a) => [a] -> [(String, String, Double)]
+distanceMatrix xs = map distancePair $ crossSets xs

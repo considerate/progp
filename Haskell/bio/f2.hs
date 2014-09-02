@@ -12,7 +12,7 @@ module F2
 	profileName,
 	MolSeq,
 	Profile,
-	Evol
+	Evol(name,distance)
 )
 where
 import MolSeq
