@@ -11,13 +11,12 @@ module MolSeq
 )
 where
 
-import Levenshtein
 import Hamming
 
 data SeqType = DNA | Protein deriving (Show, Eq)
 data MolSeq = MolSeq String String SeqType deriving (Show, Eq)
 
-dnaBlocks = ['A', 'C', 'G', 'T']
+dnaBlocks = "ACGT"
 
 isProtein :: String -> Bool
 isProtein seq = not $ isDNA seq

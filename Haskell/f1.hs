@@ -24,16 +24,15 @@ pirateSpeech x | isConsonant x = [x, 'o', x]
 
 rovarsprak :: String -> String
 rovarsprak [] = []
-rovarsprak [x] = pirateSpeech x
-rovarsprak (x:xs) = pirateSpeech x ++ rovarsprak xs
+rovarsprak xs = concat $ map pirateSpeech xs
 
 karpsravor :: String -> String
 karpsravor [x] = [x]
 karpsravor [x,y] = [x,y]
 karpsravor (x:y:z:xs) = 
 	if isConsonant x && ([x,y,z] == [x,'o',x])
-	then [x] ++ karpsravor(xs) 
-	else [x] ++ karpsravor( (y:z:xs) )
+	then x : karpsravor(xs) 
+	else x : karpsravor( (y:z:xs) )
 karpsravor [] = []
 
 numAlpha :: String -> Int
@@ -56,14 +55,19 @@ odds :: [a] -> [a]
 odds [] = []
 odds [x] = [x]
 odds [x,y] = [x]
-odds (x:y:xs) = [x] ++ odds xs 
+odds (x:y:xs) = x : odds xs
 
 evens :: [a] -> [a]
 evens [] = []
 evens [x] = []
 evens [x,y] = [y]
-evens (x:y:xs) = [y] ++ evens xs
+evens (x:y:xs) = y : evens xs
+
+skyfflalists :: [a] -> [[a]]
+skyfflalists [] = []
+skyfflalists [x] = [[x]]
+skyfflalists xs = odds xs : (skyfflalists $ evens xs)
 
 skyffla :: [a] -> [a]
 skyffla [] = []
-skyffla xs = odds xs ++ (skyffla $ evens xs)
+skyffla xs = concat $ skyfflalists xs
