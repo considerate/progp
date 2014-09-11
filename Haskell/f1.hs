@@ -1,15 +1,14 @@
 module F1 where
 
 import Data.Char
-import Data.List
 
-ackfib :: [Integer] -> [Integer]
-ackfib [x,y] = x : ackfib [y,x+y]
+fib :: Int -> Int
+fib n = fibs !! n 
+	where fibs = f 0 1 
+		where f a b = a : f b (a+b)
 
-fib :: Integer -> Integer
-fib n = last $ take (fromInteger n+1) $ ackfib [0,1]
-
-vowels = "aouiey"
+vowels :: String
+vowels = "oaieuy"
 
 isVowel :: Char -> Bool
 isVowel x = x `elem` vowels
@@ -27,7 +26,7 @@ karpsravor (x:y:z:xs)
 karpsravor xs = xs
 
 divide :: (Int,Int) -> Double
-divide (x,y) = (realToFrac y) / (realToFrac x)
+divide (x,y) = realToFrac y / realToFrac x
 
 wordCounts :: String -> (Int, Int) -> (Int,Int)
 wordCounts "" (w,l) = (w,l)
@@ -35,7 +34,7 @@ wordCounts [x] (w,l)
 	| isAlpha x = (w+1,l+1)
 	| otherwise = (w,l)
 wordCounts (x:y:xs) (w,l)
-	| (isAlpha x) && (not $ isAlpha y) = wordCounts xs (w+1,l+1)
+	| not (isAlpha y) && isAlpha x = wordCounts xs (w+1,l+1)
 	| isAlpha x = wordCounts (y:xs) (w,l+1)
 	| otherwise = wordCounts (y:xs) (w,l)
 
@@ -43,23 +42,17 @@ medellangd :: String -> Double
 medellangd [] = 0.0
 medellangd s =  divide $ wordCounts s (0,0)
 
-odds :: [a] -> [a]
-odds [] = []
-odds [x] = [x]
-odds [x,y] = [x]
-odds (x:y:xs) = x : odds xs
-
-evens :: [a] -> [a]
-evens [] = []
-evens [x] = []
-evens [x,y] = [y]
-evens (x:y:xs) = y : evens xs
+oddsevens :: [a] -> ([a],[a])
+oddsevens [] = ([],[])
+oddsevens [x] = ([x],[])
+oddsevens [x,y] = ([x],[y])
+oddsevens (x:y:xs) = (x:odds, y:evens) where (odds,evens) = oddsevens xs
 
 skyfflalists :: [a] -> [[a]]
 skyfflalists [] = []
 skyfflalists [x] = [[x]]
-skyfflalists xs = odds xs : (skyfflalists $ evens xs)
+skyfflalists xs = odds : skyfflalists evens where (odds,evens) = oddsevens xs
 
 skyffla :: [a] -> [a]
 skyffla [] = []
-skyffla xs = concat $ skyfflalists xs
+skyffla xs =　concat $ skyfflalists xs

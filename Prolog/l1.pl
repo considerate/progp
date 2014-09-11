@@ -38,16 +38,15 @@ medellangd([], AvgLen) :- AvgLen = 0.0.
 medellangd(Text, AvgLen) :- wordcounts(Text,L,W), AvgLen is L/W.
 
 odds([], []).
-odds([X],Odd) :- Odd = [X].
-odds([X,_], Odd) :- Odd = [X].
-odds([X,_|XS],[X|Odd]) :- odds(XS,Odd), !. 
+odds([X],[X]).
+odds([X,_], [X]).
+odds([X,_|XS],[X|Odd]) :- odds(XS,Odd). 
 
 evens([],[]).
 evens([_],[]).
-evens([_|XS], Even) :- odds(XS, Even), !.
-
+evens([_|XS], Even) :- odds(XS, Even).
 
 skyffla([],[]) :- !.
-skyffla([X], Skyfflad) :- Skyfflad = [X], !.
-skyffla([X,Y], Skyfflad) :- Skyfflad = [X,Y], !.
+skyffla([X], [X]) :- !.
+skyffla([X,Y], [X,Y]) :- !.
 skyffla(Lista, Skyfflad) :- odds(Lista, First), evens(Lista,Next), skyffla(Next, NextOrdered), append(First, NextOrdered, Skyfflad), !.

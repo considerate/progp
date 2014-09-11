@@ -14,27 +14,34 @@ import Data.List
 import Data.Maybe
 import Matrix
 
--- sortAndGroup assocs = fromListWith (++) [(k, [v]) | (k, v) <- assocs]
-
 data Profile = Profile String [[Double]] [[Double]] SeqType Int deriving (Show, Eq)
 
+blocks :: String
 blocks = "ACGT"
-proteinblocks = sort "ARNDCEQGHILKMFPSTWYVX"
+
+proteinblocks :: String
+proteinblocks = "ACDEFGHIKLMNPQRSTVWXY"
 
 countLetter :: String -> Char -> Int
 countLetter str x = length $ filter (== x) str
 
-seqsToStr :: [MolSeq] -> [String]
-seqsToStr seqs =  Data.List.transpose $ map seqSequence seqs
-
 letterCounts :: String -> String -> [Int]
 letterCounts letters str = map (countLetter str) letters
+
+seqsToStr :: [MolSeq] -> [String]
+seqsToStr seqs =  transpose $ map seqSequence seqs
+
+letterRow :: String -> String -> [Double]
+letterRow letters str = map realToFrac (letterCounts letters str)
+
+createMatrixForBlocks :: String -> [MolSeq] -> [[Double]]
+createMatrixForBlocks letters seqs = transpose $ map (letterRow letters) (seqsToStr seqs)
 
 makeProfileMatrix :: [MolSeq] -> [[Double]]
 makeProfileMatrix seqs = 
 	case seqType $ head seqs of 
-		DNA -> Data.List.transpose $ matrixMap realToFrac $ map (letterCounts blocks) (seqsToStr seqs)
-		Protein -> Data.List.transpose $ matrixMap realToFrac $ map (letterCounts proteinblocks) (seqsToStr seqs)
+		DNA -> createMatrixForBlocks blocks seqs
+		Protein -> createMatrixForBlocks proteinblocks seqs
 
 molseqs2profile :: String -> [MolSeq] -> Profile
 molseqs2profile name seqs = do
@@ -48,7 +55,7 @@ absDiff :: (Num a) => a -> a -> a
 absDiff x y = abs (x-y)
 
 profileDiff :: Profile -> Profile -> [[Double]]
-profileDiff (Profile _ _ a _ lena) (Profile _ _ b _ lenb) = matrixApply absDiff a b
+profileDiff (Profile _ _ a _ _) (Profile _ _ b _ _) = matrixApply absDiff a b
 
 profileDistance :: Profile -> Profile -> Double
 profileDistance a b = sumMatrix $ profileDiff a b
@@ -57,9 +64,9 @@ profileName :: Profile -> String
 profileName (Profile name _ _ _ _) = name
 
 profileFrequency :: Profile -> Int -> Char -> Double
-profileFrequency (Profile _ _ ma DNA lena) i c = do 
+profileFrequency (Profile _ _ ma DNA _) i c = do 
 	let j = fromJust $ elemIndex c blocks
-	(ma !! j !! i )
-profileFrequency (Profile _ _ ma Protein lena) i c = do 
+	ma !! j !! i
+profileFrequency (Profile _ _ ma Protein _) i c = do 
 	let j = fromJust $ elemIndex c proteinblocks
-	(ma !! j !! i )
+	ma !! j !! i 

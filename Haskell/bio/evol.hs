@@ -7,7 +7,7 @@ where
 
 import MolSeq
 import Profile
-import Matrix
+import Matrix()
 import Data.List
 
 class (Eq a) => Evol a where

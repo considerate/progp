@@ -12,30 +12,32 @@ module MolSeq
 where
 
 import Hamming
+import Data.Function
 
 data SeqType = DNA | Protein deriving (Show, Eq)
 data MolSeq = MolSeq String String SeqType deriving (Show, Eq)
 
+dnaBlocks :: String
 dnaBlocks = "ACGT"
 
 isProtein :: String -> Bool
-isProtein seq = not $ isDNA seq
+isProtein s = not $ isDNA s
 
 isDNA :: String -> Bool
-isDNA seq = all (`elem` dnaBlocks) seq
+isDNA = all (`elem` dnaBlocks)
 
 string2seq :: String -> String -> MolSeq
-string2seq name seq | isDNA seq = (MolSeq name seq DNA)
-					| isProtein seq = (MolSeq name seq Protein)
+string2seq name s | isDNA s = MolSeq name s DNA
+				  | isProtein s = MolSeq name s Protein
 
 seqName :: MolSeq -> String
 seqName (MolSeq name _ _) = name
 
 seqSequence :: MolSeq -> String
-seqSequence (MolSeq _ seq _) = seq
+seqSequence (MolSeq _ s _) = s
 
 seqLength :: MolSeq -> Int
-seqLength (MolSeq _ seq _) = length seq
+seqLength (MolSeq _ s _) = length s
 
 seqType :: MolSeq -> SeqType
 seqType (MolSeq _ _ typ) = typ 
@@ -47,8 +49,11 @@ seqType (MolSeq _ _ typ) = typ
  Formeln fungerar inte bra om sekvenserna skiljer sig åt mer än väntat, så om α>0.74 låter man ofta da, b = 3.3.
 -}
 
+divide :: Int -> Int -> Double
+divide = (/) `on` realToFrac
+
 seqDist :: String -> String -> Double
-seqDist a b = (realToFrac $ hammingDist a b) / (realToFrac $ length a)
+seqDist a b = divide (hammingDist a b) (length a)
 
 seqDistance :: MolSeq -> MolSeq -> Double
 seqDistance (MolSeq _ a DNA) (MolSeq _ b DNA) | seqDist a b <= 0.74 = -3 / 4 * log(1 - 4/3 * seqDist a b)
